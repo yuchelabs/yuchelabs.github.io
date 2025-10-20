@@ -3,449 +3,108 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Oyunculuk Teknikleri ve Yönetmenlik Sanatı</title>
+    <title>Yuchelabs - Merkezi Menü</title>
+    <!-- Modern bir görünüm için Tailwind CSS kullanıldı -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Chosen Palette: Sakin Nötrler (Calm Neutrals) -->
-    <!-- Application Structure Plan: Bu SPA, doğrusal bir rapor yerine tematik bölümlere ayrılmış bir keşif aracı olarak tasarlanmıştır. Üst gezinme çubuğu (Giriş, Teknikler, Yönetmenin Rolü, Karşılaştırma) kullanıcıya istediği bilgiye anında ulaşma imkanı tanır. 'Teknikler' bölümü, her bir oyunculuk metodunu ayrı bir interaktif sekmede sunarak karmaşıklığı azaltır ve odaklanmayı artırır. 'Karşılaştırma' bölümündeki dinamik radar grafik, soyut kavramları görselleştirerek teknikler arasındaki felsefi farkları sezgisel bir şekilde anlamayı sağlar. Bu yapı, kullanıcının bilgiyi pasifçe okumak yerine aktif olarak keşfetmesini ve sentezlemesini teşvik etmek için seçilmiştir. -->
-    <!-- Visualization & Content Choices:
-    - Rapor Bilgisi: Farklı oyunculuk tekniklerinin temel prensipleri. -> Amaç: Karşılaştırmak. -> Sunum Metodu: Dinamik Radar Grafik (Chart.js/Canvas). -> Etkileşim: Kullanıcı, hangi tekniklerin grafikte gösterileceğini seçebilir, böylece istediği karşılaştırmayı anında yapabilir. -> Gerekçe: Soyut felsefi yaklaşımları (içsel/dışsal odak, eylem/duygu vb.) ölçülebilir eksenlerde görselleştirmek, anlaşılırlığı ve akılda kalıcılığı artırır.
-    - Rapor Bilgisi: Her tekniğin detaylı açıklaması. -> Amaç: Organize Etmek. -> Sunum Metodu: Sekmeli İçerik Panelleri (HTML/CSS/JS). -> Etkileşim: Sekmelere tıklayarak ilgili içeriği gösterme/gizleme. -> Gerekçe: Bilgiyi küçük, yönetilebilir parçalara bölerek kullanıcının bunalmasını engeller ve odaklanmış bir okuma deneyimi sunar.
-    - Rapor Bilgisi: Yönetmenin roldeki sorumlulukları. -> Amaç: Bilgilendirmek. -> Sunum Metodu: İkonlarla desteklenmiş kart yapısı (HTML/Tailwind). -> Etkileşim: Statik, net bilgi sunumu. -> Gerekçe: Yönetmenin temel görevlerini hızlıca taranabilir ve anlaşılır bir formatta sunar.
-    -->
-    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #FDFBF8;
-            color: #333;
+        /* Alt menüler için yumuşak geçiş efekti */
+        .submenu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out;
         }
-        .nav-link {
-            transition: all 0.3s;
-            border-bottom: 2px solid transparent;
-        }
-        .nav-link.active, .nav-link:hover {
-            color: #D97706; /* amber-600 */
-            border-bottom-color: #D97706;
-        }
-        .tab-link.active {
-            background-color: #D97706;
-            color: #fff;
-        }
-        .content-section {
-            display: none;
-        }
-        .content-section.active {
-            display: block;
-        }
-        .chart-container {
-            position: relative;
-            width: 100%;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-            height: 300px;
-            max-height: 50vh;
-        }
-        @media (min-width: 768px) {
-            .chart-container {
-                height: 450px;
-            }
+        .icon-rotate {
+            transform: rotate(180deg);
         }
     </style>
 </head>
-<body class="antialiased">
+<body class="bg-gray-900 text-gray-200 font-sans">
 
-    <div id="app-container" class="container mx-auto p-4 md:p-8 max-w-7xl">
+    <!-- Ana İçerik ve Ortalanmış Menü Alanı -->
+    <main class="min-h-screen flex flex-col items-center justify-center p-4">
 
-        <header class="text-center py-8 border-b-2 border-amber-100">
-            <h1 class="text-4xl md:text-5xl font-bold text-amber-800 tracking-tight">Oyunculuk Teknikleri ve Yönetmenlik Sanatı</h1>
-            <p class="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">Oyuncu performansı ve yönetmen vizyonunun kesişim noktasına interaktif bir bakış.</p>
-        </header>
+        <h1 class="text-5xl font-extrabold text-white mb-2">Yuchelabs</h1>
+        <p class="text-gray-400 mb-10">Modern Navigasyon Menüsü</p>
 
-        <nav class="flex justify-center space-x-4 md:space-x-8 py-6 sticky top-0 bg-fdfbf8/80 backdrop-blur-sm z-10">
-            <a href="#giris" class="nav-link p-2 font-semibold text-gray-700 active">Giriş</a>
-            <a href="#teknikler" class="nav-link p-2 font-semibold text-gray-700">Teknikler</a>
-            <a href="#yonetmen" class="nav-link p-2 font-semibold text-gray-700">Yönetmenin Rolü</a>
-            <a href="#karsilastirma" class="nav-link p-2 font-semibold text-gray-700">Karşılaştırma</a>
-        </nav>
+        <div class="w-full max-w-md bg-gray-800 rounded-lg shadow-xl p-4">
+            <ul class="space-y-2">
+                <!-- Basit Link -->
+                <li>
+                    <a href="#" class="block w-full text-left px-4 py-3 text-lg font-medium text-white rounded-md hover:bg-gray-700 transition-colors duration-200">
+                        Ana Sayfa
+                    </a>
+                </li>
 
-        <main class="mt-8">
-            <section id="giris" class="content-section active">
-                <div class="bg-white p-8 rounded-xl shadow-sm">
-                    <h2 class="text-3xl font-bold text-amber-700 mb-4">Yönetmen ve Oyuncu: Ortak Bir Gerçeklik İnşa Etmek</h2>
-                    <div class="space-y-4 text-gray-700 leading-relaxed">
-                        <p>Bir filmin başarısı, büyük ölçüde yönetmenin vizyonu ile oyuncunun performansı arasındaki uyuma bağlıdır. Yönetmen, hikayenin anlatıcısı ve orkestra şefidir; oyuncu ise o hikayeyi duygusal olarak ete kemiğe büründüren enstrümandır. Bu iki rol arasındaki ilişki ne kadar derin ve anlaşılır olursa, perdede yaratılan dünya o kadar inandırıcı olur.</p>
-                        <p>Bu interaktif rapor, modern oyunculuğun temelini oluşturan başlıca teknikleri inceler ve bu felsefelerin bir film yönetmeni için ne anlama geldiğini araştırır. Bir yönetmenin bu teknikleri bilmesi, oyuncularıyla ortak bir dil kurmasını, onlardan en doğru performansı almasını ve nihayetinde kendi sanatsal vizyonunu eksiksiz bir şekilde hayata geçirmesini sağlar. Her teknik, "gerçeğe" ulaşmak için farklı bir yol haritası sunar ve iyi bir yönetmen, her oyuncu için doğru haritayı okuyabilen kişidir.</p>
-                    </div>
-                </div>
-            </section>
+                <!-- Alt Menülü Link -->
+                <li>
+                    <!-- Alt menüyü açıp kapatan buton -->
+                    <button class="menu-toggle flex justify-between items-center w-full text-left px-4 py-3 text-lg font-medium text-white rounded-md hover:bg-gray-700 transition-colors duration-200 focus:outline-none">
+                        <span>Film Yönetimi</span>
+                        <!-- Ok ikonu -->
+                        <svg class="w-5 h-5 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <!-- Alt Menü İçeriği -->
+                    <ul class="submenu pl-4 pt-2">
+                        <li><a href="oyunculuk.html" class="block px-4 py-2 text-gray-300 rounded-md hover:bg-gray-600 hover:text-white transition-colors duration-200">Oyunculuk</a></li>
+                        
+                    </ul>
+                </li>
 
-            <section id="teknikler" class="content-section">
-                <div class="text-center mb-8">
-                    <h2 class="text-3xl font-bold text-amber-700">Oyunculuk Ekolleri</h2>
-                    <p class="mt-2 text-gray-600">Gerçeği yeniden yaratma sanatının farklı yolları.</p>
-                </div>
-                <div class="flex flex-col md:flex-row gap-8">
-                    <div class="w-full md:w-1/4">
-                        <div id="tabs-container" class="flex md:flex-col justify-center md:justify-start gap-2">
-                            <button data-tab="stanislavski" class="tab-link w-full text-left p-3 rounded-lg font-semibold transition-all duration-300 active">Stanislavski Sistemi</button>
-                            <button data-tab="method" class="tab-link w-full text-left p-3 rounded-lg font-semibold transition-all duration-300">Metot Oyunculuğu</button>
-                            <button data-tab="meisner" class="tab-link w-full text-left p-3 rounded-lg font-semibold transition-all duration-300">Meisner Tekniği</button>
-                            <button data-tab="adler" class="tab-link w-full text-left p-3 rounded-lg font-semibold transition-all duration-300">Stella Adler</button>
-                            <button data-tab="practical" class="tab-link w-full text-left p-3 rounded-lg font-semibold transition-all duration-300">Pratik Estetik</button>
-                            <button data-tab="leigh" class="tab-link w-full text-left p-3 rounded-lg font-semibold transition-all duration-300">Mike Leigh Süreci</button>
-                        </div>
-                    </div>
-                    <div class="w-full md:w-3/4">
-                        <div id="stanislavski" class="tab-content">
-                            <div class="bg-white p-6 rounded-lg shadow-sm space-y-4">
-                                <h3 class="text-2xl font-bold text-amber-600">Stanislavski Sistemi: İçsel Gerçeklik</h3>
-                                <p class="font-semibold text-gray-700">Odak Noktası: İçsel gerçeklik ve duygusal dürüstlük. Oyuncunun, karakterin duygularını ve motivasyonlarını kendi içinde bulmasını hedefler.</p>
-                                <div class="border-t pt-4">
-                                    <h4 class="font-bold text-lg mb-2">Temel Kavramlar:</h4>
-                                    <ul class="list-disc list-inside space-y-2 text-gray-600">
-                                        <li><strong>"Sihirli Eğer" (Magic If):</strong> "Ben bu durumda olsaydım ne yapardım?" sorusuyla oyuncuyu karakterin koşullarına sokar.</li>
-                                        <li><strong>Verili Koşullar (Given Circumstances):</strong> Senaryoda karakter hakkında verilen tüm bilgiler (kim, nerede, ne zaman, neden).</li>
-                                        <li><strong>Amaç (Objective):</strong> Karakterin bir sahnede veya oyunda ne istediği. Bu, oyuncunun eylemlerini yönlendiren itici güçtür.</li>
-                                        <li><strong>Duygusal Hafıza (Emotional Recall):</strong> Karakterin duygusuna ulaşmak için oyuncunun kendi geçmişindeki benzer bir anıyı hatırlaması.</li>
-                                    </ul>
-                                </div>
-                                <div class="border-t pt-4">
-                                     <h4 class="font-bold text-lg mb-2">Pratikten Örnekler:</h4>
-                                     <div class="bg-amber-50 p-4 rounded-lg">
-                                        <p class="font-semibold text-amber-800">1. "Sihirli Eğer" Uygulaması:</p>
-                                        <p class="text-gray-700 mt-1">Bir sahnede karakterin cüzdanını kaybettiğini düşünelim. Yönetmen, oyuncuya "Üzgün oyna" demek yerine, "<strong>Eğer</strong> sen, içinde ay sonunu getirecek son paran olan cüzdanını kalabalık bir otobüste kaybettiğini fark etseydin ne hissederdin? İlk tepkin ne olurdu?" diye sorar. Bu, oyuncuyu soyut bir duygudan çıkarıp somut, kişisel bir tepkiye yönlendirir.</p>
-                                    </div>
-                                    <div class="bg-amber-50 p-4 rounded-lg mt-2">
-                                        <p class="font-semibold text-amber-800">2. Amaç (Objective) Belirleme:</p>
-                                        <p class="text-gray-700 mt-1">Karakterin patronundan zam isteme sahnesi. Amaç sadece "zam istemek" değildir. Daha derindeki amaç ne? Belki de amaç, "patronumun bana saygı duyduğunu hissetmek" veya "kızımın ameliyat parasını güvence altına almak"tır. Bu derin amaç, oyuncunun sahneyi nasıl oynayacağını tamamen değiştirir. Yönetmen ve oyuncu bu "süper amaç" üzerinde anlaşarak performansa güç katarlar.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div id="method" class="tab-content hidden">
-                           <div class="bg-white p-6 rounded-lg shadow-sm space-y-4">
-                                <h3 class="text-2xl font-bold text-amber-600">Metot Oyunculuğu: Karaktere Dönüşmek</h3>
-                                <p class="font-semibold text-gray-700">Odak Noktası: Duygusal hafızanın yoğun kullanımı. Oyuncunun, rolü oynamak yerine adeta karaktere "dönüşmesi" beklenir.</p>
-                                <div class="border-t pt-4">
-                                    <p class="text-gray-600">Genellikle Stanislavski'nin fikirlerinin Lee Strasberg tarafından yapılan yorumuna dayanır. Aktörler, rol için yoğun psikolojik ve fiziksel hazırlık yaparlar, bazen çekimler boyunca karakterde kalırlar. Bu yaklaşım, zihinsel olarak çok yorucu ve riskli olabilir, ancak unutulmaz performanslar da ortaya çıkarabilir.</p>
-                                </div>
-                           </div>
-                        </div>
-                        <div id="meisner" class="tab-content hidden">
-                            <div class="bg-white p-6 rounded-lg shadow-sm space-y-4">
-                                <h3 class="text-2xl font-bold text-amber-600">Meisner Tekniği: An'da Olmak</h3>
-                                <p class="font-semibold text-gray-700">Odak Noktası: An'da olmak ve diğer oyuncuya içgüdüsel olarak tepki vermek. Felsefesi, "Oyunculuk, hayali koşullar altında dürüstçe davranmaktır."</p>
-                                <div class="border-t pt-4">
-                                    <h4 class="font-bold text-lg mb-2">Temel Kavram:</h4>
-                                    <ul class="list-disc list-inside space-y-2 text-gray-600">
-                                       <li><strong>Tekrarlama Egzersizi (Repetition Exercise):</strong> İki oyuncu, birbirlerine yaptıkları basit bir gözlemi (örn: "Gömleğin mavi") tekrarlar. Amaç, oyuncuyu düşünmekten alıkoyup anlık ve organik tepkiler vermeye zorlamaktır. Bu, ezberlenmiş diyalogların ötesine geçerek gerçek dinlemeyi ve tepki vermeyi öğretir.</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                        <div id="adler" class="tab-content hidden">
-                           <div class="bg-white p-6 rounded-lg shadow-sm space-y-4">
-                                <h3 class="text-2xl font-bold text-amber-600">Stella Adler: Hayal Gücünün Gücü</h3>
-                                <p class="font-semibold text-gray-700">Odak Noktası: Hayal gücü ve metin analizi. Adler'e göre, oyuncu kendi acı dolu anılarına dönmek yerine, hayal gücünü kullanarak karakterin duygularını yaratmalıdır.</p>
-                                <div class="border-t pt-4">
-                                     <p class="text-gray-600">Oyuncu, senaryodaki "verili koşulları" derinlemesine analiz eder ve bu koşullar içinde karakterin nasıl davranacağını, hissedeceğini hayal gücüyle zenginleştirerek inşa eder. Metin, performansın çıkış noktasıdır.</p>
-                                </div>
-                           </div>
-                        </div>
-                        <div id="practical" class="tab-content hidden">
-                           <div class="bg-white p-6 rounded-lg shadow-sm space-y-4">
-                                <h3 class="text-2xl font-bold text-amber-600">Pratik Estetik: Eylem Odaklı Yaklaşım</h3>
-                                <p class="font-semibold text-gray-700">Odak Noktası: Karmaşık psikolojik analiz yerine, karakterin sahnede ne yaptığını anlamak.</p>
-                                <div class="border-t pt-4">
-                                     <h4 class="font-bold text-lg mb-2">Dört Adımlı Sahne Analizi:</h4>
-                                     <ol class="list-decimal list-inside space-y-2 text-gray-600">
-                                         <li><strong>Literal:</strong> Sahnede kelimenin tam anlamıyla ne oluyor?</li>
-                                         <li><strong>Want:</strong> Karakter bu sahnede diğer karakterden ne istiyor?</li>
-                                         <li><strong>Essential Action:</strong> Karakterin amacına ulaşmak için yaptığı temel, oynanabilir eylem (örn: bir sırrı ortaya çıkarmak, birini teselli etmek).</li>
-                                         <li><strong>As If:</strong> Oyuncunun, bu eylemi kendi hayatından bir şeye benzetmesi. "Bu, sanki..."</li>
-                                     </ol>
-                                </div>
-                           </div>
-                        </div>
-                        <div id="leigh" class="tab-content hidden">
-                           <div class="bg-white p-6 rounded-lg shadow-sm space-y-4">
-                                <h3 class="text-2xl font-bold text-amber-600">Mike Leigh Süreci: Senaryosuz Yaratım</h3>
-                                <p class="font-semibold text-gray-700">Odak Noktası: Karakter ve hikayenin, senaryo olmadan, uzun provalar ve yoğun doğaçlama seansları yoluyla organik olarak geliştirilmesi.</p>
-                                <div class="border-t pt-4">
-                                     <h4 class="font-bold text-lg mb-2">Çalışma Prensibi:</h4>
-                                     <ul class="list-disc list-inside space-y-2 text-gray-600">
-                                         <li><strong>Sıfırdan Başlamak:</strong> Leigh, projelere yazılı bir senaryo olmadan başlar. Sadece bir başlangıç fikri veya teması olabilir.</li>
-                                         <li><strong>Karakter İnşası:</strong> Yönetmen, her oyuncuyla aylarca süren bire bir seanslar yapar. Bu süreçte oyuncu, karakterinin tüm geçmişini, alışkanlıklarını, ilişkilerini ve dünya görüşünü yaratır.</li>
-                                         <li><strong>Doğaçlama ve Keşif:</strong> Karakterler yeterince olgunlaştığında, Leigh onları çeşitli durumlarda bir araya getirerek doğaçlama yapmalarını sağlar. Hikaye, bu etkileşimlerden doğal olarak doğar.</li>
-                                         <li><strong>Otantik Diyalog:</strong> Filmlerdeki diyaloglar, büyük ölçüde bu doğaçlama seanslarının en başarılı anlarının yazıya dökülmüş halidir. Bu, performanslara ve diyaloglara olağanüstü bir gerçeklik hissi katar.</li>
-                                     </ul>
-                                </div>
-                           </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
+                <!-- Bir Başka Alt Menülü Link -->
+                <li>
+                    <button class="menu-toggle flex justify-between items-center w-full text-left px-4 py-3 text-lg font-medium text-white rounded-md hover:bg-gray-700 transition-colors duration-200 focus:outline-none">
+                        <span>Hakkımızda</span>
+                        <svg class="w-5 h-5 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <ul class="submenu pl-4 pt-2">
+                        <li><a href="#" class="block px-4 py-2 text-gray-300 rounded-md hover:bg-gray-600 hover:text-white transition-colors duration-200">Ekibimiz</a></li>
+                        <li><a href="#" class="block px-4 py-2 text-gray-300 rounded-md hover:bg-gray-600 hover:text-white transition-colors duration-200">Kariyer</a></li>
+                    </ul>
+                </li>
 
-            <section id="yonetmen" class="content-section">
-                <div class="text-center mb-8">
-                     <h2 class="text-3xl font-bold text-amber-700">Yönetmenin Perspektifi</h2>
-                     <p class="mt-2 text-gray-600">Teknik bilgiyi vizyona dönüştürmek.</p>
-                </div>
-                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <div class="bg-white p-6 rounded-lg shadow-sm">
-                        <h3 class="text-xl font-bold text-amber-800">1. Ortak Bir Dil Yaratmak</h3>
-                        <p class="mt-2 text-gray-600">Yönetmen, "Daha üzgün oyna" gibi soyut yönlendirmeler yerine, oyuncunun tekniğine uygun, somut ve eyleme geçirilebilir direktifler verir. Bu, iletişim boşluğunu ortadan kaldırır.</p>
-                    </div>
-                     <div class="bg-white p-6 rounded-lg shadow-sm">
-                        <h3 class="text-xl font-bold text-amber-800">2. Doğru Oyuncu Seçimi</h3>
-                        <p class="mt-2 text-gray-600">Rolün gerektirdiği duygusal ve fiziksel talepleri karşılayabilecek, doğru teknik altyapıya sahip oyuncuları seçmek projenin temelini oluşturur.</p>
-                    </div>
-                     <div class="bg-white p-6 rounded-lg shadow-sm">
-                        <h3 class="text-xl font-bold text-amber-800">3. Performansın Tonunu Ayarlamak</h3>
-                        <p class="mt-2 text-gray-600">Filmin genel vizyonuna (natüralist, stilize vb.) uygun performanslar almak için oyuncuları doğru tekniklere yönlendirir ve tutarlılığı sağlar.</p>
-                    </div>
-                     <div class="bg-white p-6 rounded-lg shadow-sm">
-                        <h3 class="text-xl font-bold text-amber-800">4. Güvenli ve Yaratıcı Bir Alan</h3>
-                        <p class="mt-2 text-gray-600">Özellikle duygusal olarak zorlayıcı teknikler kullanan oyuncular için yönetmen, onların kendilerini güvende hissedeceği ve risk alabileceği bir set ortamı yaratmalıdır.</p>
-                    </div>
-                    <div class="bg-white p-6 rounded-lg shadow-sm">
-                        <h3 class="text-xl font-bold text-amber-800">5. Esneklik ve Adaptasyon</h3>
-                        <p class="mt-2 text-gray-600">İyi bir yönetmen, tek bir metoda bağlı kalmaz. Karşısındaki oyuncunun çalışma şeklini anlar ve kendi yönlendirmelerini ona göre adapte eder.</p>
-                    </div>
-                </div>
-            </section>
-
-            <section id="karsilastirma" class="content-section">
-                <div class="text-center mb-8">
-                     <h2 class="text-3xl font-bold text-amber-700">Tekniklerin Karşılaştırması</h2>
-                     <p class="mt-2 text-gray-600">Farklı yaklaşımların felsefi temellerini görsel olarak inceleyin.</p>
-                </div>
-                <div class="bg-white p-6 rounded-lg shadow-sm">
-                    <div class="chart-container mx-auto">
-                        <canvas id="techChart"></canvas>
-                    </div>
-                    <div id="chart-legend" class="flex flex-wrap justify-center gap-4 mt-6">
-                        <!-- Legend will be generated by JS -->
-                    </div>
-                </div>
-                 <div class="bg-white p-6 rounded-lg shadow-sm mt-8 overflow-x-auto">
-                    <h3 class="text-2xl font-bold text-amber-600 mb-4 text-center">Özet Tablo</h3>
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr>
-                                <th class="py-3 px-4 bg-amber-100 font-bold uppercase text-sm text-amber-800 border-b border-amber-200">Teknik</th>
-                                <th class="py-3 px-4 bg-amber-100 font-bold uppercase text-sm text-amber-800 border-b border-amber-200">Odak Noktası</th>
-                                <th class="py-3 px-4 bg-amber-100 font-bold uppercase text-sm text-amber-800 border-b border-amber-200">Yönetmen İçin İpucu</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr class="hover:bg-amber-50">
-                                <td class="py-3 px-4 border-b border-amber-200 font-semibold">Stanislavski</td>
-                                <td class="py-3 px-4 border-b border-amber-200">İçsel gerçeklik, motivasyon</td>
-                                <td class="py-3 px-4 border-b border-amber-200">Karakterin "amacı" ve "nedenleri" üzerine konuşun. "Sihirli Eğer" soruları sorun.</td>
-                            </tr>
-                            <tr class="hover:bg-amber-50">
-                                <td class="py-3 px-4 border-b border-amber-200 font-semibold">Metot</td>
-                                <td class="py-3 px-4 border-b border-amber-200">Yoğun duygusal özdeşleşme</td>
-                                <td class="py-3 px-4 border-b border-amber-200">Oyuncuya hazırlık için alan tanıyın. Duygusal güvenliği sağlayın.</td>
-                            </tr>
-                             <tr class="hover:bg-amber-50">
-                                <td class="py-3 px-4 border-b border-amber-200 font-semibold">Meisner</td>
-                                <td class="py-3 px-4 border-b border-amber-200">An'da kalmak, organik tepki</td>
-                                <td class="py-3 px-4 border-b border-amber-200">Dikkati partnere ve çevreye yönlendirin. "Hissetmeye" ve "yapmaya" teşvik edin.</td>
-                            </tr>
-                            <tr class="hover:bg-amber-50">
-                                <td class="py-3 px-4 border-b border-amber-200 font-semibold">Stella Adler</td>
-                                <td class="py-3 px-4 border-b border-amber-200">Hayal gücü, metin analizi</td>
-                                <td class="py-3 px-4 border-b border-amber-200">Senaryodaki detaylar ve karakterin dünyası üzerine çalışın.</td>
-                            </tr>
-                             <tr class="hover:bg-amber-50">
-                                <td class="py-3 px-4 border-b border-amber-200 font-semibold">Pratik Estetik</td>
-                                <td class="py-3 px-4 border-b border-amber-200">Eylem, amaç</td>
-                                <td class="py-3 px-4 border-b border-amber-200">Basit, oynanabilir eylemler ve hedefler verin. "Ne istiyorsun?" diye sorun.</td>
-                            </tr>
-                            <tr class="hover:bg-amber-50">
-                                <td class="py-3 px-4 border-b border-amber-200 font-semibold">Mike Leigh Süreci</td>
-                                <td class="py-3 px-4 border-b border-amber-200">Doğaçlama yoluyla karakter ve hikaye yaratımı</td>
-                                <td class="py-3 px-4 border-b border-amber-200">Oyunculara geniş bir yaratım alanı ve zaman tanıyın. Sürece güvenin ve hikayenin organik olarak gelişmesine izin verin.</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-        </main>
-    </div>
+                <!-- Basit Link -->
+                 <li>
+                    <a href="#" class="block w-full text-left px-4 py-3 text-lg font-medium text-white rounded-md hover:bg-gray-700 transition-colors duration-200">
+                        İletişim
+                    </a>
+                </li>
+                 <!--
+                    YENİ MENÜ ELEMANI EKLEMEK İÇİN:
+                    - Basit bir link için ilk 'li' elemanını kopyalayın.
+                    - Alt menülü bir link için 'Hizmetler' veya 'Hakkımızda' 'li' elemanını kopyalayın.
+                 -->
+            </ul>
+        </div>
+         <footer class="text-center text-gray-500 mt-12">
+            <p>&copy; 2025 Yuchelabs. Tüm hakları saklıdır.</p>
+        </footer>
+    </main>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        // Tüm menü toggle butonlarını seç
+        const menuToggles = document.querySelectorAll('.menu-toggle');
 
-            const navLinks = document.querySelectorAll('.nav-link');
-            const contentSections = document.querySelectorAll('.content-section');
+        menuToggles.forEach(button => {
+            button.addEventListener('click', () => {
+                // Tıklanan butonun hemen sonrasındaki submenu'yü bul
+                const submenu = button.nextElementSibling;
+                // Butonun içindeki ikonu bul
+                const icon = button.querySelector('svg');
 
-            const tabLinks = document.querySelectorAll('.tab-link');
-            const tabContents = document.querySelectorAll('.tab-content');
-
-            function navigateToSection(hash) {
-                navLinks.forEach(link => {
-                    link.classList.toggle('active', link.hash === hash);
-                });
-                contentSections.forEach(section => {
-                    section.classList.toggle('active', section.id === hash.substring(1));
-                });
-            }
-
-            navLinks.forEach(link => {
-                link.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    const targetId = this.hash;
-                    navigateToSection(targetId);
-                    window.location.hash = targetId;
-                });
-            });
-
-            const initialHash = window.location.hash || '#giris';
-            navigateToSection(initialHash);
-
-
-            tabLinks.forEach(link => {
-                link.addEventListener('click', function () {
-                    const tabId = this.dataset.tab;
-
-                    tabLinks.forEach(l => l.classList.remove('active'));
-                    this.classList.add('active');
-
-                    tabContents.forEach(content => {
-                        if (content.id === tabId) {
-                            content.classList.remove('hidden');
-                        } else {
-                            content.classList.add('hidden');
-                        }
-                    });
-                });
-            });
-
-
-            // Chart.js implementation
-            const chartData = {
-                labels: ['İçsel Odak', 'Eylem Odaklılık', 'Hayal Gücü', 'İçgüdüsel Tepki', 'Metin Analizi', 'Duygusal Hafıza'],
-                datasets: [
-                    {
-                        label: 'Stanislavski',
-                        data: [9, 7, 7, 6, 8, 8],
-                        borderColor: 'rgba(194, 65, 12, 1)', // red-700
-                        backgroundColor: 'rgba(194, 65, 12, 0.2)',
-                        pointBackgroundColor: 'rgba(194, 65, 12, 1)',
-                        hidden: false,
-                    },
-                    {
-                        label: 'Metot',
-                        data: [10, 5, 6, 5, 6, 10],
-                        borderColor: 'rgba(139, 92, 246, 1)', // violet-500
-                        backgroundColor: 'rgba(139, 92, 246, 0.2)',
-                        pointBackgroundColor: 'rgba(139, 92, 246, 1)',
-                        hidden: false,
-                    },
-                    {
-                        label: 'Meisner',
-                        data: [4, 8, 5, 10, 3, 2],
-                        borderColor: 'rgba(22, 163, 74, 1)', // green-600
-                        backgroundColor: 'rgba(22, 163, 74, 0.2)',
-                        pointBackgroundColor: 'rgba(22, 163, 74, 1)',
-                        hidden: false,
-                    },
-                    {
-                        label: 'Stella Adler',
-                        data: [6, 7, 10, 5, 9, 3],
-                        borderColor: 'rgba(37, 99, 235, 1)', // blue-600
-                        backgroundColor: 'rgba(37, 99, 235, 0.2)',
-                        pointBackgroundColor: 'rgba(37, 99, 235, 1)',
-                        hidden: false,
-                    },
-                    {
-                        label: 'Pratik Estetik',
-                        data: [2, 10, 6, 4, 8, 1],
-                        borderColor: 'rgba(217, 119, 6, 1)', // amber-600
-                        backgroundColor: 'rgba(217, 119, 6, 0.2)',
-                        pointBackgroundColor: 'rgba(217, 119, 6, 1)',
-                        hidden: false,
-                    },
-                    {
-                        label: 'Mike Leigh Süreci',
-                        data: [10, 8, 9, 10, 1, 6],
-                        borderColor: 'rgba(20, 184, 166, 1)', // teal-500
-                        backgroundColor: 'rgba(20, 184, 166, 0.2)',
-                        pointBackgroundColor: 'rgba(20, 184, 166, 1)',
-                        hidden: false,
-                    }
-                ]
-            };
-
-            const chartConfig = {
-                type: 'radar',
-                data: chartData,
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        r: {
-                            angleLines: { color: '#e5e7eb' },
-                            grid: { color: '#e5e7eb' },
-                            pointLabels: {
-                                font: { size: 12, weight: 'bold' },
-                                color: '#4b5563'
-                            },
-                            ticks: {
-                                backdropColor: '#FDFBF8',
-                                color: '#6b7280'
-                            },
-                            suggestedMin: 0,
-                            suggestedMax: 10
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                           display: false
-                        }
-                    }
+                // Submenu'nün açık olup olmadığını kontrol et
+                if (submenu.style.maxHeight) {
+                    // Açıksa kapat
+                    submenu.style.maxHeight = null;
+                    icon.classList.remove('icon-rotate');
+                } else {
+                    // Kapalıysa aç. ScrollHeight, içeriğin tam yüksekliğini verir.
+                    submenu.style.maxHeight = submenu.scrollHeight + 'px';
+                    icon.classList.add('icon-rotate');
                 }
-            };
-
-            const ctx = document.getElementById('techChart');
-            if(ctx) {
-                const techChart = new Chart(ctx, chartConfig);
-                const legendContainer = document.getElementById('chart-legend');
-
-                chartData.datasets.forEach((dataset, index) => {
-                    const legendItem = document.createElement('button');
-                    legendItem.innerHTML = `<span class="inline-block w-4 h-4 rounded-full mr-2" style="background-color: ${dataset.borderColor}"></span> ${dataset.label}`;
-                    legendItem.classList.add('px-4', 'py-2', 'rounded-full', 'text-sm', 'font-semibold', 'cursor-pointer', 'transition-all');
-
-                    if (!dataset.hidden) {
-                        legendItem.classList.add('bg-gray-200');
-                        legendItem.style.color = '#333';
-                    } else {
-                        legendItem.classList.add('bg-gray-100', 'text-gray-400');
-                    }
-
-                    legendItem.onclick = () => {
-                        const meta = techChart.getDatasetMeta(index);
-                        meta.hidden = !meta.hidden;
-                        techChart.update();
-
-                        legendItem.classList.toggle('bg-gray-200');
-                        legendItem.classList.toggle('bg-gray-100');
-                        legendItem.classList.toggle('text-gray-400');
-                    };
-                    legendContainer.appendChild(legendItem);
-                });
-            }
+            });
         });
     </script>
+
 </body>
 </html>
 
